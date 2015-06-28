@@ -1,0 +1,35 @@
+Push 67079405567184005086107571748115383207539763039497665210559156555730234138
+Duplicate
+Call sn
+Call sn
+Push 2
+Swap
+Call n
+Push 10
+OutputChar
+Discard
+Push 3
+Swap
+Call n
+End
+Label n
+Duplicate
+JumpZero tn
+Copy 1
+Copy 1
+Copy 1
+Divide
+Call n
+Modulo
+Duplicate
+JumpZero tn
+Push 8
+Add
+OutputChar
+Return
+Label tn
+Discard
+Label sn
+Push 32
+OutputChar
+Return

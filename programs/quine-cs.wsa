@@ -1,0 +1,43 @@
+Push 41433165240049162358628862917417167599136612921972624268369679730974189800757979819435624
+Duplicate
+Call sn
+Call sn
+Push 0
+Push 2
+Store
+Call n
+Call tn
+Push 0
+Push 3
+Store
+Call n
+End
+Label n
+Duplicate
+JumpZero ssn
+Duplicate
+Push 0
+Retrieve
+Divide
+Call n
+Push 0
+Retrieve
+Modulo
+Duplicate
+JumpZero ssn
+Push 2
+Subtract
+JumpZero tn
+Push 9
+OutputChar
+Return
+Label tn
+Push 10
+OutputChar
+Return
+Label ssn
+Discard
+Label sn
+Push 32
+OutputChar
+Return
