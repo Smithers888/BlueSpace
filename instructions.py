@@ -33,11 +33,24 @@ class instruction:
         self.name = itype.name
         self.param = param
     
-    def __str__(self):
+    def towhitespace(self):
+        if self.param is None:
+            return self.rep
+        else:
+            return self.rep + self.param.towhitespace()
+    
+    def toprintable(self):
+        tr = str.maketrans(' \t\n', 'stn')
+        if self.param is None:
+            return self.rep.translate(tr)
+        else:
+            return self.rep.translate(tr) + ' ' + self.param.towhitespace().translate(tr)
+    
+    def toassembly(self):
         if self.param is None:
             return self.name
         else:
-            return self.name + ' ' + str(self.param)
+            return self.name + ' ' + self.param.toassembly()
 
 class instructiontype:
     def __init__(self, rep, name, paramtype=None):

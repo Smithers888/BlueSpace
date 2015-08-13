@@ -24,7 +24,8 @@
 # this Software without prior written authorization from the author.
 
 class numparam:
-    tr = str.maketrans(' \t', '01')
+    _tr = str.maketrans(' \t', '01')
+    _untr = str.maketrans('01', ' \t')
     
     def parse(parser):
         i = parser.i
@@ -33,7 +34,7 @@ class numparam:
             raise RuntimeError('BlueSpace: Failed to parse, unterminated integer')
         elif j == i:
             raise RuntimeError('BlueSpace: Failed to parse, empty integer')
-        n = 0 if j == i+1 else int(parser.code[i+1:j].translate(numparam.tr), 2)
+        n = 0 if j == i+1 else int(parser.code[i+1:j].translate(numparam._tr), 2)
         if parser.code[i] == '\t':
             n = -n
         parser.i = j + 1
@@ -42,11 +43,17 @@ class numparam:
     def __init__(self, n):
         self.value = n
     
-    def __str__(self):
+    def toassembly(self):
         return str(self.value)
+    
+    def towhitespace(self):
+        if self.value < 0:
+            return '\t' + format(-self.value, 'b').translate(numparam._untr) + '\n'
+        else:
+            return ' ' + format(self.value, 'b').translate(numparam._untr) + '\n'
 
 class stringparam:
-    tr = str.maketrans(' \t', 'st')
+    _tr = str.maketrans(' \t', 'st')
     
     def parse(parser):
         i = parser.i
@@ -59,5 +66,11 @@ class stringparam:
     def __init__(self, s):
         self.value = s
     
-    def __str__(self):
-        return self.value.translate(stringparam.tr) + 'n'
+    def name(self):
+        return self.value.translate(stringparam._tr) + 'n'
+    
+    def toassembly(self):
+        return self.value.translate(stringparam._tr) + 'n'
+    
+    def towhitespace(self):
+        return self.value + '\n'

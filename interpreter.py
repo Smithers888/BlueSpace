@@ -130,7 +130,7 @@ class interpret:
     def __init__(self, stmt):
         self.execute = getexecute(stmt)
         self.label = stmt.param.value if stmt.rep == '\n  ' else None
-        self.string = str(stmt)
+        self.string = stmt.toassembly()
 
 class machine:
     def __init__(self, program):

@@ -35,7 +35,7 @@ def _getcode(stmt):
     rep = stmt.rep
     
     if rep == '  ': # Push
-        return '    stack.append(' + str(stmt.param) + ')',
+        return '    stack.append(' + str(stmt.param.value) + ')',
     elif rep == ' \n ': # Duplicate
         return '    stack.append(stack[-1])',
     elif rep == ' \t ': # Copy
@@ -55,13 +55,13 @@ def _getcode(stmt):
     elif rep == '\t\t\t': # Retrieve
         return '    stack[-1] = heap[stack[-1]]',
     elif rep == '\n \t': # Call
-        return '    run(' + str(stmt.param) + ')',
+        return '    run(' + stmt.param.name() + ')',
     elif rep == '\n\t ': # JumpZero
         return ('    if stack.pop() == 0:',
-                '        return ' + str(stmt.param))
+                '        return ' + stmt.param.name())
     elif rep == '\n\t\t': # JumpNegative
         return ('    if stack.pop() < 0:',
-                '        return ' + str(stmt.param))
+                '        return ' + stmt.param.name())
     elif rep == '\t\n  ': # OutputChar
         return '    sys.stdout.write(chr(stack.pop()))',
     elif rep == '\t\n \t': # OutputNum
@@ -75,8 +75,7 @@ def _getcode(stmt):
                 '    heap[stack.pop()] = x')
     elif rep == '\t\n\t\t': # ReadNum
         return ('    sys.stdout.flush()',
-                '    s = sys.stdin.readline()',
-                '    heap[stack.pop()] = int(s)')
+                '    heap[stack.pop()] = int(sys.stdin.readline())')
 
 def topython(program):
     result = [
@@ -96,11 +95,11 @@ def topython(program):
         
         if rep == '\n  ': # Label
             if reachable:
-                result.append('    return ' + str(stmt.param))
-            result.append('def ' + str(stmt.param) + '():')
+                result.append('    return ' + stmt.param.name())
+            result.append('def ' + stmt.param.name() + '():')
             reachable = True
         elif rep == '\n \n': # Jump
-            result.append('    return ' + str(stmt.param))
+            result.append('    return ' + stmt.param.name())
             reachable = False
         elif rep == '\n\t\n': # Return
             result.append('    return')

@@ -23,10 +23,11 @@
 # in advertising or otherwise to promote the sale, use or other dealings in
 # this Software without prior written authorization from the author.
 
-from assembler import assemble
+import assembler
 from compiler import topython
 from instructions import instructions
 from interpreter import machine
+from optimiser import optimise
 from parser import parser
 
 import argparse
@@ -34,27 +35,19 @@ import sys
 
 argparser = argparse.ArgumentParser(description='''BlueSpace - A Whitespace interpreter in Python3.
 For more information on Whitespace, visit http://compsoc.dur.ac.uk/whitespace/
-
-author: Smithers888
-''', epilog='Note: If using standard input for the source file with the --run or --runcompiled options, this will make it difficult to supply input to the program.', formatter_class=argparse.RawDescriptionHelpFormatter)
-argparser.add_argument('-p', '--printable', action='store_true', help='use the characters `s`, `t` and `n` instead of space, tab and newline respectively')
-actiongroup = argparser.add_mutually_exclusive_group()
-actiongroup.add_argument('-a', '--assemble', action='store_true', help='assemble code to whitespace')
-actiongroup.add_argument('-c', '--compile', action='store_true', help='compile whitespace to Python and print')
-actiongroup.add_argument('-C', '--runcompiled', action='store_true', help='compile whitespace to Python and execute')
-actiongroup.add_argument('-d', '--disassemble', action='store_true', help='disassemble Whitespace code instead of executing it')
-actiongroup.add_argument('-r', '--run', action='store_true', help='run the Whitespace code (default)')
+''', formatter_class=argparse.RawDescriptionHelpFormatter)
 argparser.add_argument('-v', '--version', action='store_true', help='print version information and exit')
-argparser.add_argument('sourcepath', nargs='?', default='-', help='path to the input source file, if omitted or `-\', use standard input')
+argparser.add_argument('-i', '--input', choices=('whitespace', 'printable', 'assembly'), help="choose the input syntax, SYNTAX is `whitespace', `printable' or `assembly' (defaults to whitespace)", metavar='SYNTAX')
+actiongroup = argparser.add_mutually_exclusive_group()
+actiongroup.add_argument('-c', '--convertto', choices=('whitespace', 'printable', 'assembly', 'python', 'optimised'), help="if TARGET is `whitespace', `printable' or `assembly', convert to that syntax; if TARGET is `python' or `optimised', compile to Python3 source, respectively without or with optimisations", metavar='TARGET')
+actiongroup.add_argument('-r', '--run', choices=('interpret', 'python', 'optimised'), help="if MODE is `interpret', interpret Whitespace code directly; if MODE is `python' or `optimised', compile as with -c MODE and then evaluate the resulting code (defaults to interpret)", metavar='MODE')
+argparser.add_argument('sourcepath', nargs='?', default='-', help="path to the input source file, if omitted or `-', use standard input", metavar='SOURCE')
 
 args = argparser.parse_args()
 
 if args.version:
-    print('BlueSpace 1.0\nCopyright (C) 2014 Christopher Smith')
+    print('BlueSpace 1.1\nCopyright (C) 2014 Christopher Smith')
     sys.exit()
-
-if not (args.assemble or args.compile or args.runcompiled or args.disassemble):
-    args.run = True
 
 if args.sourcepath == '-':
     sourcefile = sys.stdin
@@ -65,38 +58,43 @@ else:
         print('BlueSpace: Failed to open ' + sourcefile, file=sys.stderr)
         sys.exit(1)
 
-if args.assemble:
+if args.input == 'assembly':
     try:
-        code = assemble(sourcefile, args.printable)
+        program = list(assembler.parse(sourcefile))
     except RuntimeError:
         sys.exit(1)
-    print(code, end='')
-    sys.exit()
-
-if args.printable:
-    tr = {'s': ' ', 't': '\t', 'n': '\n'}
-    source = ''.join((tr[x] for x in sourcefile.read() if x in tr))
 else:
-    source = ''.join((x for x in sourcefile.read() if x in ' \t\n'))
-
-if args.disassemble:
+    if args.input == 'printable':
+        tr = {'s': ' ', 't': '\t', 'n': '\n'}
+        source = ''.join(tr[x] for x in sourcefile.read() if x in tr)
+    else:
+        source = ''.join(x for x in sourcefile.read() if x in ' \t\n')
     try:
-        for stmt in parser(source).parse():
-            print(stmt)
+        program = parser(source).parse()
     except RuntimeError as err:
         sys.exit(err)
-    sys.exit()
 
-try:
-    program = parser(source).parse()
-except RuntimeError as err:
-    sys.exit(err)
-
-if args.compile:
+if args.convertto == 'whitespace':
+    for stmt in program:
+        print(stmt.towhitespace(), end='')
+elif args.convertto == 'printable':
+    for stmt in program:
+        print(stmt.toprintable())
+elif args.convertto == 'assembly':
+    for stmt in program:
+        print(stmt.toassembly())
+elif args.convertto == 'python':
     print(topython(program))
-elif args.runcompiled:
+elif args.convertto == 'optimised':
+    print(optimise(program))
+elif args.run == 'python':
     try:
         exec(topython(program))
+    except SystemExit:
+        pass
+elif args.run == 'optimised':
+    try:
+        exec(optimise(program))
     except SystemExit:
         pass
 else:
