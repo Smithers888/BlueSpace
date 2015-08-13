@@ -1,0 +1,32 @@
+#!/bin/sh
+
+path="`dirname "$0"`"
+
+for arg in "" -C
+do
+    echo arg=$arg
+    
+    echo "  Test basic arithmetic"
+    $path/../bspace.py $arg $path/count.ws | diff $path/count.out -
+    
+    echo "  Test printable-input mode"
+    $path/../bspace.py -p $arg $path/count.wsp | diff $path/count.out -
+    
+    echo "  Test reading/writing characters"
+    echo Chris | $path/../bspace.py $arg $path/name.ws | diff $path/name.out -
+    
+    echo "  Test reading/writing numbers"
+    echo 4 | $path/../bspace.py $arg $path/hanoi.ws | diff $path/hanoi.out -
+    
+    echo "  Test Copy/Slide instructions"
+    printf "123\n456\n" | $path/../bspace.py $arg $path/loctest.ws | diff $path/loctest.out -
+done
+
+echo Test disassembler
+$path/../bspace.py -d $path/loctest.ws | diff $path/loctest.wsa -
+
+echo Test assembler
+$path/../bspace.py -a $path/hanoi.wsa | diff $path/hanoi.ws -
+
+echo Test printable assembler
+$path/../bspace.py -pa $path/hanoi.wsa | diff $path/hanoi.wsp -

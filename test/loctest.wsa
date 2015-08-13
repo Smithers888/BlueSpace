@@ -1,0 +1,114 @@
+Push 0
+Push 69
+Store
+Push 1
+Push 110
+Store
+Push 2
+Push 116
+Store
+Push 3
+Push 101
+Store
+Push 4
+Push 114
+Store
+Push 5
+Push 32
+Store
+Push 6
+Push 97
+Store
+Push 7
+Push 32
+Store
+Push 8
+Push 110
+Store
+Push 9
+Push 117
+Store
+Push 10
+Push 109
+Store
+Push 11
+Push 98
+Store
+Push 12
+Push 101
+Store
+Push 13
+Push 114
+Store
+Push 14
+Push 58
+Store
+Push 15
+Push 32
+Store
+Push 16
+Push 0
+Store
+Push 0
+Call stttstttstttsstssttstsststttstsssttsststn
+Push 100
+ReadNum
+Push 0
+Call stttstttstttsstssttstsststttstsssttsststn
+Push 101
+ReadNum
+Push 100
+Retrieve
+Push 101
+Retrieve
+Call sttsttsssttsttttsttsssttstttstsssttsstststttssttstttstssn
+OutputNum
+End
+Label sttsttsssttsttttsttsssttstttstsssttsstststttssttstttstssn
+Copy 0
+Copy 2
+Add
+Slide 2
+Return
+Label sttsssststtsstsssttsstssn
+Add
+Return
+Label stttstttstttsstssttstsststttstsssttsststn
+Duplicate
+Retrieve
+Duplicate
+JumpZero stttstttstttsstssttstsststttstsssttsststststttttsttsstststtstttssttsstssn
+OutputChar
+Push 1
+Add
+Jump stttstttstttsstssttstsststttstsssttsststn
+Label stttstttstttsstssttstsststttstsssttsststststttttsttsstststtstttssttsstssn
+Discard
+Discard
+Return
+Label stttsstssttsstststtsssststtsstssn
+Duplicate
+Duplicate
+ReadChar
+Retrieve
+Duplicate
+Push 10
+Subtract
+JumpZero stttsstssttsstststtsssststtsstssststttttsttsstststtstttssttsstssn
+Discard
+Push 1
+Add
+Jump stttsstssttsstststtsssststtsstssn
+Label stttsstssttsstststtsssststtsstssststttttsttsstststtstttssttsstssn
+Discard
+Push 1
+Add
+Push 0
+Store
+Return
+Label sttstttssttsstststttstttsttsttsssttstsststtstttssttsststn
+Push 10
+Push 13
+OutputChar
+OutputChar
+Return
