@@ -8,8 +8,10 @@ BlueSpace is the name of an interpreter for the Whitespace programming language.
 This interpreter is written in Python 3 and boasts the following features:
 * Interpret Whitespace code
 * Compile Whitespace code to Python and optionally execute it
-* Option to use a printable syntax, which substitutes space, tab and linefeed with `s`, `t` and `n`, respectively
-* Assemble and disassemble an assembly-style syntax (described below)
+  * Optimise the generated Python code
+* Accept and translate between Whitespace syntax, as well as:
+  * A printable syntax, which substitutes space, tab and linefeed with `s`, `t` and `n`, respectively
+  * An assembly-style syntax (described below)
 
 To run a Whitespace program, simply execute `./bspace.py source.ws`; to see other options, use `./bspace.py --help`.
 
