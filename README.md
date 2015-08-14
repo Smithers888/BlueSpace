@@ -48,3 +48,6 @@ OutputNum
 ReadChar
 ReadNum
 </pre>
+
+## More
+I have another page about Whitespace and BlueSpace which includes some of my own Whitespace programs at http://cpjsmith.co.uk/whitespace
