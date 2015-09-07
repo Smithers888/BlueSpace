@@ -54,7 +54,7 @@ class _optimiser:
             if self.xvars[j] == None:
                 return 'x' + str(j)
             else:
-                return self.xvars[j]
+                return str(self.xvars[j])
         else:
             return 'stack[' + str(j) + ']'
     
@@ -94,7 +94,7 @@ class _optimiser:
                 return
         
         if rep == '  ': # Push
-            self.xvars.append(str(stmt.param.value))
+            self.xvars.append(stmt.param.value)
         elif rep == ' \n ': # Duplicate
             if len(self.xvars) == 0:
                 self.xvars.append('stack[-1]')
@@ -143,13 +143,13 @@ class _optimiser:
                 self.xvars[-2] = None
                 self.xvars.pop()
             else:
-                self.xvars[-2] = '(' + self.xvars[-2] + ' ' + _arithmap[rep] + ' ' + self.xvars[-1] + ')'
+                self.xvars[-2] = '(' + str(self.xvars[-2]) + ' ' + _arithmap[rep] + ' ' + str(self.xvars[-1]) + ')'
                 self.xvars.pop()
         elif rep == '\t\t ': # Store
             if self.checkheap:
                 for i in len(self.xvars):
                     if self.xvars[i] is not None and 'heap' in self.xvars[i]:
-                        self.result.append('    x' + str(i) + ' = ' + self.xvars[i])
+                        self.result.append('    x' + str(i) + ' = ' + str(self.xvars[i]))
                         self.xvars[i] = None
                 self.checkheap = False
             if len(self.xvars) == 0:
@@ -204,13 +204,26 @@ class _optimiser:
             self.reachable = False
         elif rep == '\t\n  ': # OutputChar
             if len(self.xvars) >= 1:
-                self.result.append('    sys.stdout.write(chr(' + self._stackval(0) + '))')
+                if isinstance(self.xvars[-1], int):
+                    if self.xvars[-1] == 0x27:
+                        self.result.append('    sys.stdout.write("\'")')
+                    elif 0x20 <= self.xvars[-1] <= 0x7f:
+                        self.result.append("    sys.stdout.write('" + chr(self.xvars[-1]) + "')")
+                    elif 0x00 <= self.xvars[-1] <= 0xff:
+                        self.result.append("    sys.stdout.write('\\x{:02x}')".format(self.xvars[-1]))
+                    else:
+                        self.result.append('    sys.stdout.write(chr(' + str(self.xvars[-1]) + '))')
+                else:
+                    self.result.append('    sys.stdout.write(chr(' + self._stackval(0) + '))')
                 self.xvars.pop()
             else:
                 self.result.append('    sys.stdout.write(chr(stack.pop()))')
         elif rep == '\t\n \t': # OutputNum
             if len(self.xvars) >= 1:
-                self.result.append('    sys.stdout.write(str(' + self._stackval(0) + '))')
+                if isinstance(self.xvars[-1], int):
+                    self.result.append("    sys.stdout.write('" + str(self.xvars[-1]) + "')")
+                else:
+                    self.result.append('    sys.stdout.write(str(' + self._stackval(0) + '))')
                 self.xvars.pop()
             else:
                 self.result.append('    sys.stdout.write(str(stack.pop()))')
