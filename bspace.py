@@ -28,7 +28,7 @@ from compiler import topython
 from instructions import instructions
 from interpreter import machine
 from optimiser import optimise
-from parser import parser
+from wsparser import parser
 
 import argparse
 import sys
